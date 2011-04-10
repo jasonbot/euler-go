@@ -6,7 +6,6 @@ OUTFILES := $(patsubst %.go,%.out,$(wildcard *.go))
 	6g $<
 
 %.out: %.6
-	6l $<
-	if [ -f $< ] rm $<
+	6l -o $@ $<
 
 all: $(OUTFILES)
