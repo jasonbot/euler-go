@@ -92,12 +92,12 @@ func main() {
 		}
 	}
 
-	rowpos, colpos := maxrow + 1, len(matrix[0]) - 1
+	rowpos, colpos := maxrow - 1, len(matrix[0]) - 1
 	for {
+		fmt.Printf("%v, %v\n", colpos, rowpos)
 		if (rowpos == 0 && colpos == 0) {
 			break
 		}
-		fmt.Printf("%v, %v", colpos, rowpos)
 		if (matrix[rowpos][colpos].direction == LEFT) {
 			colpos -= 1
 		} else if (matrix[rowpos][colpos].direction == UP) {
