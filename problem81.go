@@ -94,7 +94,7 @@ func main() {
 
 	rowpos, colpos := maxrow - 1, len(matrix[0]) - 1
 	for {
-		fmt.Printf("%v, %v\n", colpos, rowpos)
+		fmt.Printf("%v, %v (%v)\n", colpos, rowpos, matrix[rowpos][colpos].minscore)
 		if (rowpos == 0 && colpos == 0) {
 			break
 		}
