@@ -91,4 +91,20 @@ func main() {
 			}
 		}
 	}
+
+	rowpos, colpos := maxrow + 1, len(matrix[0]) - 1
+	for {
+		if (rowpos == 0 && colpos == 0) {
+			break
+		}
+		fmt.Printf("%v, %v", colpos, rowpos)
+		if (matrix[rowpos][colpos].direction == LEFT) {
+			colpos -= 1
+		} else if (matrix[rowpos][colpos].direction == UP) {
+			rowpos -= 1
+		} else {
+			fmt.Printf("This should never happen\n")
+			break
+		}
+	}
 }
