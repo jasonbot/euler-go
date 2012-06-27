@@ -35,7 +35,7 @@ const (
 
 type RouteNode struct {
 	minscore, cost uint64
-	direction uint8
+	direction      uint8
 }
 
 func CreateNode(node_score uint64) RouteNode {
@@ -62,13 +62,33 @@ func main() {
 			nodeValues := strings.Split(lineString, ",")
 			for index := 0; index < len(nodeValues); index++ {
 				val, err := strconv.ParseUint(nodeValues[index], 10, 64)
-				if (err != nil) {
+				if err != nil {
 					fmt.Printf("Error reading data\n")
 					return
 				}
 				row = append(row, CreateNode(val))
 			}
 			matrix = append(matrix, row)
+		}
+	}
+
+	maxrow := len(matrix)
+	for rowindex := 0; rowindex < maxrow; rowindex++ {
+		maxcol := len(matrix[rowindex])
+		for colindex := 0; colindex < maxcol; colindex += 1 {
+			newmax := matrix[rowindex][colindex].minscore + matrix[rowindex][colindex].cost
+			if (colindex < maxcol - 1) {
+				if (matrix[rowindex][colindex + 1].direction == UNSET || matrix[rowindex][colindex + 1].minscore > newmax) {
+					matrix[rowindex][colindex + 1].minscore = newmax
+					matrix[rowindex][colindex + 1].direction = LEFT
+				}
+			}
+			if (rowindex < maxrow - 1) {
+				if (matrix[rowindex + 1][colindex].direction == UNSET || matrix[rowindex + 1][colindex].minscore > newmax) {
+					matrix[rowindex + 1][colindex].minscore = newmax
+					matrix[rowindex + 1][colindex].direction = UP
+				}
+			}
 		}
 	}
 }
