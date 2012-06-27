@@ -103,5 +103,5 @@ func main() {
 			//fmt.Printf("Here's a useless item: %v\n", item)
 		}
 	}
-	fmt.Printf("Et voila. %v chance of winning.\n", win_probability * 100.)
+	fmt.Printf("Et voila. %v chance of winning. Pack %v pounds.\n", win_probability * 100., 1. / win_probability)
 }
