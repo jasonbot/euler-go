@@ -56,27 +56,33 @@ func loadnetwork(filename string) (network, error) {
 
 	file_handle, err := os.Open(filename)
 
-    if (err != nil) {
-        return newnetwork, err
-    }
+	if err != nil {
+		return newnetwork, err
+	}
 
 	file_reader := bufio.NewReader(file_handle)
 
-    var line_index = 0
+	var line_index = 0
 
-    for {
-        line, _, err := file_reader.ReadLine();
-        if (err != nil) {
-            break
-        }
-        fmt.Printf("Line: %s\n", line);
-        line_index += 1
-    }
+	for {
+		line, _, err := file_reader.ReadLine()
+		if err != nil {
+			break
+		}
+		fmt.Printf("Line: %s\n", line)
+		line_index += 1
+	}
 
 	return newnetwork, err
 }
 
 func main() {
-	loadednetwork, _ := loadnetwork("network.txt")
+	loadednetwork, err := loadnetwork("network.txt")
+
+	if err != nil {
+		fmt.Printf("Error loading network file\n")
+		return
+	}
+
 	loadednetwork.minimumspanningtree()
 }
