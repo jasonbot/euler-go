@@ -25,3 +25,21 @@ maximum saving which can be achieved by removing redundant edges whilst
 ensuring that the network remains connected.
 
 */
+
+package main
+
+import (
+    "fmt"
+)
+
+type node struct {
+    id int
+}
+
+type network struct {
+    nodes []node
+}
+
+func main() {
+    fmt.Printf("Hello");
+}
