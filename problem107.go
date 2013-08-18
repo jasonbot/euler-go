@@ -29,7 +29,9 @@ ensuring that the network remains connected.
 package main
 
 import (
+	"bufio"
 	"fmt"
+	"os"
 )
 
 type link struct {
@@ -41,12 +43,40 @@ type network struct {
 	links []link
 }
 
-func minimumspanningtree(self *network) network {
+func (n *network) minimumspanningtree() network {
 	var newnetwork network
 
 	return newnetwork
 }
 
+func loadnetwork(filename string) (network, error) {
+	var newnetwork network
+
+	fmt.Printf("Loading file %s", filename)
+
+	file_handle, err := os.Open(filename)
+
+    if (err != nil) {
+        return newnetwork, err
+    }
+
+	file_reader := bufio.NewReader(file_handle)
+
+    var line_index = 0
+
+    for {
+        line, _, err := file_reader.ReadLine();
+        if (err != nil) {
+            break
+        }
+        fmt.Printf("Line: %s\n", line);
+        line_index += 1
+    }
+
+	return newnetwork, err
+}
+
 func main() {
-	fmt.Printf("Hello")
+	loadednetwork, _ := loadnetwork("network.txt")
+	loadednetwork.minimumspanningtree()
 }
