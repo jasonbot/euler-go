@@ -45,7 +45,6 @@ type network struct {
 
 func (n *network) minimumspanningtree() network {
 	var newnetwork network
-
 	return newnetwork
 }
 
