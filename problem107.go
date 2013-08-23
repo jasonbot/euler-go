@@ -32,11 +32,13 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+    "strconv"
+	"strings"
 )
 
 type link struct {
-	from_node, to_node int
-	cost               float32
+	from_node, to_node uint
+	cost               uint64
 }
 
 type network struct {
@@ -46,6 +48,10 @@ type network struct {
 func (n *network) minimumspanningtree() network {
 	var newnetwork network
 	return newnetwork
+}
+
+func (n *network) addlink(from_node uint, to_node uint, cost uint64) {
+    n.links = append(n.links, link{from_node, to_node, cost})
 }
 
 func loadnetwork(filename string) (network, error) {
@@ -61,7 +67,7 @@ func loadnetwork(filename string) (network, error) {
 
 	file_reader := bufio.NewReader(file_handle)
 
-	var line_index = 0
+    line_index := uint(0)
 
 	for {
 		line, _, err := file_reader.ReadLine()
@@ -69,6 +75,16 @@ func loadnetwork(filename string) (network, error) {
 			break
 		}
 		fmt.Printf("Line: %s\n", line)
+
+		links := strings.Split(string(line), ",")
+
+        for col_index := uint(0); col_index < uint(len(links)); col_index += 1 {
+            cost, err := strconv.ParseUint(links[col_index], 10, 64);
+            if (err != nil) {
+                newnetwork.addlink(line_index, col_index, cost)
+            }
+        }
+
 		line_index += 1
 	}
 
