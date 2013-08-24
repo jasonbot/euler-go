@@ -32,7 +32,8 @@ import (
 	"bufio"
 	"fmt"
 	"os"
-    "strconv"
+	"sort"
+	"strconv"
 	"strings"
 )
 
@@ -45,19 +46,62 @@ type network struct {
 	links []link
 }
 
-func (n *network) minimumspanningtree() network {
-	var newnetwork network
-	return newnetwork
+func (n *network) addlink(from_node uint, to_node uint, cost uint64) {
+	n.links = append(n.links, link{from_node, to_node, cost})
 }
 
-func (n *network) addlink(from_node uint, to_node uint, cost uint64) {
-    n.links = append(n.links, link{from_node, to_node, cost})
+// Paperwork to implement sort interface
+func (n *network) Len() int {
+	return len(n.links)
+}
+
+func (n *network) Swap(i, j int) {
+	n.links[i], n.links[j] = n.links[j], n.links[i]
+}
+
+func (n *network) Less(i, j int) bool {
+	return n.links[i].cost < n.links[j].cost
+}
+
+func (n *network) sort() {
+	sort.Sort(n)
+}
+
+// Method to make actual fixed network
+func (n *network) minimumspanningtree() network {
+	var newnetwork network
+	var to_links, from_links []bool = make([]bool, len(n.links)), make([]bool, len(n.links))
+
+	n.sort()
+
+	for i := 0; i < len(n.links); i += 1 {
+		link := n.links[i]
+
+        if to_links[link.to_node] == false || from_links[link.from_node] == false {
+		    newnetwork.addlink(link.from_node, link.to_node, link.cost)
+		    from_links[link.from_node] = true
+		    to_links[link.to_node] = true
+        }
+
+		all_reached := true
+		for j := 0; j < len(from_links); j += 1 {
+			if to_links[j] == false || from_links[j] == false {
+				all_reached = false
+			}
+		}
+
+		if all_reached == true {
+			break
+		}
+	}
+
+	return newnetwork
 }
 
 func loadnetwork(filename string) (network, error) {
 	var newnetwork network
 
-	fmt.Printf("Loading file %s", filename)
+	fmt.Println("Loading file", filename)
 
 	file_handle, err := os.Open(filename)
 
@@ -67,23 +111,22 @@ func loadnetwork(filename string) (network, error) {
 
 	file_reader := bufio.NewReader(file_handle)
 
-    line_index := uint(0)
+	line_index := uint(0)
 
 	for {
 		line, _, err := file_reader.ReadLine()
 		if err != nil {
 			break
 		}
-		fmt.Printf("Line: %s\n", line)
 
-		links := strings.Split(string(line), ",")
+		link_items := strings.Split(string(line), ",")
 
-        for col_index := uint(0); col_index < uint(len(links)); col_index += 1 {
-            cost, err := strconv.ParseUint(links[col_index], 10, 64);
-            if (err != nil) {
-                newnetwork.addlink(line_index, col_index, cost)
-            }
-        }
+		for col_index := uint(0); col_index < uint(len(link_items)); col_index += 1 {
+			cost, err := strconv.ParseUint(link_items[col_index], 10, 64)
+			if err == nil {
+				newnetwork.addlink(line_index, col_index, cost)
+			}
+		}
 
 		line_index += 1
 	}
@@ -99,5 +142,8 @@ func main() {
 		return
 	}
 
-	loadednetwork.minimumspanningtree()
+    new_network := loadednetwork.minimumspanningtree()
+
+    fmt.Println("Old network:", len(loadednetwork.links), loadednetwork.links)
+    fmt.Println("New network:", len(new_network.links), new_network.links)
 }
