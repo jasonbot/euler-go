@@ -50,6 +50,18 @@ func (n *network) addlink(from_node uint, to_node uint, cost uint64) {
 	n.links = append(n.links, link{from_node, to_node, cost})
 }
 
+func (n *network) nodecount() uint {
+	nc := uint(0)
+	for idx := 0; idx < len(n.links); idx += 1 {
+		if n.links[idx].to_node >= nc {
+			nc = n.links[idx].to_node + 1
+		} else if n.links[idx].from_node >= nc {
+			nc = n.links[idx].from_node + 1
+		}
+	}
+	return nc
+}
+
 func (n *network) prettyprint() {
 }
 
@@ -79,24 +91,24 @@ func (n *network) minimumspanningtree() network {
 	for i := 0; i < len(n.links); i += 1 {
 		link := n.links[i]
 
-        var to_links, from_links []bool = make([]bool, len(n.links)), make([]bool, len(n.links))
-        for new_link_index := 0; new_link_index < len(newnetwork.links); new_link_index += 1 {
-            new_link := newnetwork.links[new_link_index]
-		    from_links[new_link.from_node] = true
-		    to_links[new_link.to_node] = true
-        }
+		var to_links, from_links []bool = make([]bool, n.nodecount()), make([]bool, n.nodecount())
+		for new_link_index := 0; new_link_index < len(newnetwork.links); new_link_index += 1 {
+			new_link := newnetwork.links[new_link_index]
+			from_links[new_link.from_node] = true
+			to_links[new_link.to_node] = true
+		}
 
-        if from_links[link.from_node] == false || to_links[link.to_node] == false {
-            newnetwork.addlink(link.from_node, link.to_node, link.cost)
-        }
+		if from_links[link.from_node] == false || to_links[link.to_node] == false {
+			newnetwork.addlink(link.from_node, link.to_node, link.cost)
+		}
 
 		all_reached := true
 
-        for j := 0; j < len(from_links); j += 1 {
-            if to_links[j] == false || from_links[j] == false {
-                all_reached = false
-            }
-        }
+		for j := 0; j < len(from_links); j += 1 {
+			if to_links[j] == false || from_links[j] == false {
+				all_reached = false
+			}
+		}
 
 		if all_reached == true {
 			break
@@ -150,10 +162,10 @@ func main() {
 		return
 	}
 
-    new_network := loadednetwork.minimumspanningtree()
+	new_network := loadednetwork.minimumspanningtree()
 
-    fmt.Println("Old network:", len(loadednetwork.links))
-    loadednetwork.prettyprint()
-    fmt.Println("New network:", len(new_network.links))
-    new_network.prettyprint()
+	fmt.Println("Old network:", len(loadednetwork.links))
+	loadednetwork.prettyprint()
+	fmt.Println("New network:", len(new_network.links))
+	new_network.prettyprint()
 }
