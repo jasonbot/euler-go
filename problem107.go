@@ -75,7 +75,7 @@ func (n *network) Swap(i, j int) {
 }
 
 func (n *network) Less(i, j int) bool {
-	return n.links[i].cost < n.links[j].cost
+	return n.links[i].cost > n.links[j].cost
 }
 
 func (n *network) sort() {
@@ -88,32 +88,24 @@ func (n *network) minimumspanningtree() network {
 
 	n.sort()
 
+    link_in_count := make([]int, n.nodecount())
+    link_out_count := make([]int, n.nodecount())
+
 	for i := 0; i < len(n.links); i += 1 {
 		link := n.links[i]
-
-		var to_links, from_links []bool = make([]bool, n.nodecount()), make([]bool, n.nodecount())
-		for new_link_index := 0; new_link_index < len(newnetwork.links); new_link_index += 1 {
-			new_link := newnetwork.links[new_link_index]
-			from_links[new_link.from_node] = true
-			to_links[new_link.to_node] = true
-		}
-
-		if from_links[link.from_node] == false || to_links[link.to_node] == false {
-			newnetwork.addlink(link.from_node, link.to_node, link.cost)
-		}
-
-		all_reached := true
-
-		for j := 0; j < len(from_links); j += 1 {
-			if to_links[j] == false || from_links[j] == false {
-				all_reached = false
-			}
-		}
-
-		if all_reached == true {
-			break
-		}
+        link_out_count[link.from_node] += 1
+        link_in_count[link.to_node] += 1
 	}
+
+	for i := 0; i < len(n.links); i += 1 {
+		link := n.links[i]
+        if link_out_count[link.from_node] > 1 && link_in_count[link.to_node] > 1 {
+            link_out_count[link.from_node] -= 1
+            link_in_count[link.to_node] -= 1
+        } else {
+            newnetwork.addlink(link.from_node, link.to_node, link.cost)
+        }
+    }
 
 	return newnetwork
 }
