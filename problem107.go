@@ -50,6 +50,9 @@ func (n *network) addlink(from_node uint, to_node uint, cost uint64) {
 	n.links = append(n.links, link{from_node, to_node, cost})
 }
 
+func (n *network) prettyprint {
+}
+
 // Paperwork to implement sort interface
 func (n *network) Len() int {
 	return len(n.links)
@@ -149,6 +152,8 @@ func main() {
 
     new_network := loadednetwork.minimumspanningtree()
 
-    fmt.Println("Old network:", len(loadednetwork.links), loadednetwork.links)
-    fmt.Println("New network:", len(new_network.links), new_network.links)
+    fmt.Println("Old network:", len(loadednetwork.links))
+    loadednetwork.prettyprint()
+    fmt.Println("New network:", len(new_network.links))
+    new_network.prettyprint()
 }
