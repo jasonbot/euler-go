@@ -37,6 +37,10 @@ import (
 	"strings"
 )
 
+type linkpair struct {
+	from_node, to_node uint
+}
+
 type link struct {
 	from_node, to_node uint
 	cost               uint64
@@ -47,6 +51,9 @@ type network struct {
 }
 
 func (n *network) addlink(from_node uint, to_node uint, cost uint64) {
+	if from_node < to_node {
+		from_node, to_node = to_node, from_node
+	}
 	n.links = append(n.links, link{from_node, to_node, cost})
 }
 
@@ -63,6 +70,30 @@ func (n *network) nodecount() uint {
 }
 
 func (n *network) prettyprint() {
+	link_map := make(map[linkpair]uint64)
+
+	for idx := 0; idx < len(n.links); idx += 1 {
+		link := n.links[idx]
+
+		link_map[linkpair{link.from_node, link.to_node}] = link.cost
+	}
+
+	for row_idx := uint(0); row_idx < n.nodecount(); row_idx += 1 {
+		for col_idx := uint(0); col_idx < n.nodecount(); col_idx += 1 {
+			if col_idx > 0 {
+				fmt.Printf(",")
+			}
+
+			cost, has_key := link_map[linkpair{row_idx, col_idx}]
+
+			if has_key {
+				fmt.Printf("%v", cost)
+			} else {
+				fmt.Printf("-")
+			}
+		}
+		fmt.Println("")
+	}
 }
 
 // Paperwork to implement sort interface
@@ -78,7 +109,7 @@ func (n *network) Less(i, j int) bool {
 	return n.links[i].cost > n.links[j].cost
 }
 
-func (n *network) sort() {
+func (n *network) sortbycost() {
 	sort.Sort(n)
 }
 
@@ -86,26 +117,26 @@ func (n *network) sort() {
 func (n *network) minimumspanningtree() network {
 	var newnetwork network
 
-	n.sort()
+	n.sortbycost()
 
-    link_in_count := make([]int, n.nodecount())
-    link_out_count := make([]int, n.nodecount())
+	link_in_count := make([]int, n.nodecount())
+	link_out_count := make([]int, n.nodecount())
 
 	for i := 0; i < len(n.links); i += 1 {
 		link := n.links[i]
-        link_out_count[link.from_node] += 1
-        link_in_count[link.to_node] += 1
+		link_out_count[link.from_node] += 1
+		link_in_count[link.to_node] += 1
 	}
 
 	for i := 0; i < len(n.links); i += 1 {
 		link := n.links[i]
-        if link_out_count[link.from_node] > 1 && link_in_count[link.to_node] > 1 {
-            link_out_count[link.from_node] -= 1
-            link_in_count[link.to_node] -= 1
-        } else {
-            newnetwork.addlink(link.from_node, link.to_node, link.cost)
-        }
-    }
+		if link_out_count[link.from_node] > 1 && link_in_count[link.to_node] > 1 {
+			link_out_count[link.from_node] -= 1
+			link_in_count[link.to_node] -= 1
+		} else {
+			newnetwork.addlink(link.from_node, link.to_node, link.cost)
+		}
+	}
 
 	return newnetwork
 }
@@ -154,10 +185,10 @@ func main() {
 		return
 	}
 
-	new_network := loadednetwork.minimumspanningtree()
+	newnetwork := loadednetwork.minimumspanningtree()
 
-	fmt.Println("Old network:", len(loadednetwork.links))
+	fmt.Println("-- Old Network --")
 	loadednetwork.prettyprint()
-	fmt.Println("New network:", len(new_network.links))
-	new_network.prettyprint()
+	fmt.Println("-- New Network --")
+	newnetwork.prettyprint()
 }
