@@ -84,7 +84,12 @@ func (n *network) prettyprint() {
 				fmt.Printf(",")
 			}
 
-			cost, has_key := link_map[linkpair{row_idx, col_idx}]
+			row, col := row_idx, col_idx
+			if row < col {
+				row, col = col, row
+			}
+
+			cost, has_key := link_map[linkpair{row, col}]
 
 			if has_key {
 				fmt.Printf("%v", cost)
