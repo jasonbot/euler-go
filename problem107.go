@@ -50,7 +50,7 @@ func (n *network) addlink(from_node uint, to_node uint, cost uint64) {
 	n.links = append(n.links, link{from_node, to_node, cost})
 }
 
-func (n *network) prettyprint {
+func (n *network) prettyprint() {
 }
 
 // Paperwork to implement sort interface
