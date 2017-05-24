@@ -1,6 +1,9 @@
-OUTFILES := $(patsubst %.go,%.out,$(wildcard *.go))
+OUTFILES := $(patsubst %.go,%,$(wildcard *.go))
 
-%.out: %.go
+%: %.go
 	go build -o $@ $<
 
 all: $(OUTFILES)
+
+clean:
+	rm -rf $(OUTFILES)
